@@ -5,6 +5,8 @@ from django.http import HttpResponseForbidden, FileResponse
 from .forms import AssignmentForm, SubmissionForm, EvaluationForm
 from django import template
 from django.db.models import Q
+import datetime
+from django.utils import timezone
 
 # Create your views here.
 @login_required(login_url='/accounts/login/')
@@ -22,6 +24,8 @@ def index(request):
         marks_array = []
         total_marks_array = []
         feedbacks_array = []
+        deadlines_array = []
+
         for assignment in assignments:
             flag = False
             flag_graded = False
@@ -35,13 +39,21 @@ def index(request):
                     feedback = submission.feedback
                     break
             
+            if flag == False:
+                if assignment.deadline < timezone.now():
+                    deadlines_array.append(False)
+                else:
+                    deadlines_array.append(True)
+            else:
+                deadlines_array.append(True)
+
             submitted_array.append(flag)
             graded_array.append(flag_graded)
             marks_array.append(marks)
             total_marks_array.append(assignment.max_marks)
             feedbacks_array.append(feedback)
 
-        my_list = zip(assignments, submitted_array, graded_array, marks_array, total_marks_array, feedbacks_array)
+        my_list = zip(assignments, submitted_array, graded_array, marks_array, total_marks_array, feedbacks_array, deadlines_array)
 
         context = { "my_list": my_list }
         return render(request, 'student_index.html', context)
@@ -57,10 +69,9 @@ def AddAssignment(request):
     if request.user.is_staff:
         if request.method == 'POST':
             form = AssignmentForm(request.POST, request.FILES)
-
+            print(form)
             if form.is_valid():
                 assignment = form.save(commit=False)
-
                 if request.FILES.get('assignment_file', None):
                     assignment.assignment_file = request.FILES.get(
                         'assignment_file', None)
@@ -152,7 +163,6 @@ def EvaluateAssignment(request, pk1, pk2):
     if request.user.is_staff:
         assignment_obj = Assignment.objects.get(pk=pk1)
         form_instance = SubmittedAssignment.objects.get(pk=pk2)
-        request.session['id'] = form_instance.id
         if request.method == 'POST':
             form = EvaluationForm(request.POST, request.FILES, instance=form_instance)
             print(form)
@@ -165,7 +175,7 @@ def EvaluateAssignment(request, pk1, pk2):
             else:
                 print(form.errors)
         else:
-            form = SubmissionForm(instance=form_instance)
+            form = EvaluationForm(instance=form_instance)
 
         return render(request, 'evaluation.html', {'assignment_obj': assignment_obj, 'form_instance': form_instance, 'form': form, 'url': str(pk1)+"/"+str(pk2)})
     else:

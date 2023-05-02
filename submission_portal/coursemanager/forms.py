@@ -50,17 +50,14 @@ class SubmissionForm(ModelForm):
         widgets = {
             'student_name': TextInput(attrs={
                 'class': "form-control",
-                'id': 'stud_name'
                 }),
 
             'roll_number': TextInput(attrs={
                 'class': "form-control",
-                'id': 'roll_num'
                 }),
 
             'submitted_assignment_name': TextInput(attrs={
                 'class': "form-control",
-                'id': 'sa'
                 }),
         }
 
@@ -76,11 +73,9 @@ class EvaluationForm(ModelForm):
         widgets = {
             'marks': NumberInput(attrs={
                 'class': "form-control",
-                'id': 'mks'
                 }),
 
             'feedback': TextInput(attrs={
                 'class': "form-control",
-                'id': 'fb'
                 }),
         }

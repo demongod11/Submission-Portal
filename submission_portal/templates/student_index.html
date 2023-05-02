@@ -6,58 +6,67 @@
 <head>
     <meta charset="UTF-8">
     <title>View Assignments</title>
-    {% comment %} <link rel="stylesheet" href="{% static 'hab_portal/styles.css' %}"> {% endcomment %}
-    <script src="{% static 'jquery-3.4.1.min.js' %}"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div>Logged in as {{ user.email }} with Roll number as {{ user.last_name }}</div>
-    <a href="accounts/logout">Log Out</a>
-    <div>List of all assignments:</div>
-    <table class="table-auto w-full text-left whitespace-no-wrap">
-        <tbody>
-            <tr>
-                <th width="10%" class="px-4 py-3 title-font  font-medium text-gray-900  bg-gray-100">Assignment Name</th>
-                <th width="20%" class="px-4 py-3 title-font  font-medium text-gray-900  bg-gray-100">Description</th>
-                <th width="10%" class="px-4 py-3 title-font  font-medium text-gray-900  bg-gray-100">Assignment File</th>
-                <th width="20%" class="px-4 py-3 title-font font-medium text-gray-900 bg-gray-100">Deadline</th>
-                <th width="10%" class="px-4 py-3 title-font font-medium text-gray-900 bg-gray-100">Submission Status</th>
-                <th width="10%" class="px-4 py-3 title-font  font-medium text-gray-900  bg-gray-100">Grade Awarded</th>
-                <th width="20%" class="px-4 py-3 title-font  font-medium text-gray-900  bg-gray-100">Feedback</th>
-            </tr>
-        </tbody>
-    </table>
-    {% for assignment, submit_array, grade_array, mark_array, total_mark_array, feedback in my_list %}
-    <table>
-        <tr>
-            <td width="10%" class="px-4 py-3">{{ assignment.assignment_name }}</td>
-            <td width="20%" class="px-4 py-3">{{ assignment.description }}</td>
-            <td width="10%" class="px-4 py-3"><a href="{% url 'coursemanager:media' file=assignment.assignment_file %}"target="_blank">View Assignment</a></td>
-            <td width="20%" class="px-4 py-3 ">{{ assignment.deadline }}</td>
-            {% if submit_array %}
-                <td width="10%" class="px-4 py-3 ">Submitted</td>
-                {% if grade_array %}
-                    <td width="10%" class="px-4 py-3 ">{{ mark_array }}/{{ total_mark_array }}</td>
-                    <td width="20%" class="px-4 py-3 ">{{ feedback }}</td>
-                {% else %}
-                    <td width="10%" class="px-4 py-3 ">Not Graded</td>
-                    <td width="20%" class="px-4 py-3 ">Not Given</td>
-                {% endif %}
-            {% else %}
-                <td width="10%" class="px-4 py-3 "><a href="{% url 'coursemanager:submit-assignment' pk=assignment.pk %}">Submit</a></td>
-                <td width="10%" class="px-4 py-3 ">Not Graded</td>
-                <td width="20%" class="px-4 py-3 ">Not Given</td>
-            {% endif %}
-        </tr>
-    </table>
-    {% endfor %}
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex">
+                    <a class="text-lg font-bold text-gray-800" href="#">Assignment Manager</a>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-600 mr-4">{{ user.email }}</span>
+                    <span class="text-gray-600">{{ user.last_name }}</span>
+                    <a class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 ml-4 rounded" href="accounts/logout">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto my-8">
+        <div class="text-2xl font-bold mb-4">List of all assignments:</div>
+        <table class="table-auto w-full text-left">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Assignment Name</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Description</th>
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Assignment File</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Deadline</th>
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Submission Status</th>
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Grade Awarded</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment, submit_array, grade_array, mark_array, total_mark_array, feedback, deadline_array in my_list %}
+                <table>
+                    <tr>
+                        <td width="10%" class="px-4 py-3">{{ assignment.assignment_name }}</td>
+                        <td width="20%" class="px-4 py-3">{{ assignment.description }}</td>
+                        <td width="10%" class="px-4 py-3"><a href="{% url 'coursemanager:media' file=assignment.assignment_file %}" target="_blank">View Assignment</a></td>
+                        <td width="20%" class="px-4 py-3 {% if deadline_array %}{% if deadline_array < timezone.now %}text-red-500{% endif %}{% endif %}">{{ assignment.deadline }}</td>
+                        {% if submit_array %}
+                            <td width="10%" class="px-4 py-3 {% if grade_array %}text-green-500{% endif %}">Submitted</td>
+                            {% if grade_array %}
+                                <td width="10%" class="px-4 py-3 ">{{ mark_array }}/{{ total_mark_array }}</td>
+                                <td width="20%" class="px-4 py-3 ">{{ feedback }}</td>
+                            {% else %}
+                                <td width="10%" class="px-4 py-3 ">Not Graded</td>
+                                <td width="20%" class="px-4 py-3 ">Not Given</td>
+                            {% endif %}
+                        {% else %}
+                            {% if deadline_array %}
+                                <td width="10%" class="px-4 py-3"><a href="{% url 'coursemanager:submit-assignment' pk=assignment.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</a></td>
+                            {% else %}
+                                <td width="10%" class="px-4 py-3 text-red-500">Deadline Passed</td>
+                            {% endif %}
+                            <td width="10%" class="px-4 py-3 ">Not Graded</td>
+                            <td width="20%" class="px-4 py-3 ">Not Given</td>
+                        {% endif %}
+                    </tr>
+                </table>
+            {% endfor %}
+            
+</table>
 </body>
 </html>

@@ -47,12 +47,12 @@
          {% csrf_token %}
             <div class="relative mb-4 form-group">
                 <label for="Marks" class="leading-7 required-field text-Black-600">Marks (Out of {{ assignment_obj.max_marks }})</label><br>
-                <input id = "sone1" type="number" name="Marks" value="{{ form.marks }}" class="form-control">
+                {{ form.marks }}
             </div>
 
             <div class="relative mb-4 form-group">
                 <label for="Feedback" class="leading-7 text-Black-600">Feedback</label><br>
-                <textarea id = "sone2" name="Feedback" value="{{ form.feedback }}" class="form-control"></textarea>
+                {{ form.feedback }}
             </div>
 
             <input  id="but3" type="submit" class="btn btn-primary btn-lg text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text" style="max-width:30%;"{% if locked %}disabled{% endif %} value="Submit">
@@ -68,9 +68,9 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script scr="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
-<script>
+{% comment %} <script>
     $('#mks').val(21);
     $('#fb').val("pls");
-</script> 
+</script>  {% endcomment %}
 </body>
 </html>
