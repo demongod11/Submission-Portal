@@ -73,7 +73,8 @@ def AddAssignment(request):
                 assignment.save()
 
                 return redirect('coursemanager:home')
-
+            else:
+                print(form.errors)
         else:
            form = AssignmentForm() 
 
@@ -99,6 +100,9 @@ def EditAssignment(request,pk):
                 assignment.save()
 
                 return redirect('coursemanager:home')
+            
+            else:
+                print(form.errors)
 
         else:
            form = AssignmentForm(instance = form_instance) 
@@ -132,6 +136,9 @@ def SubmitAssignment(request,pk):
                 submission.save()
 
                 return redirect('coursemanager:home')
+            
+            else:
+                print(form.errors)
 
         else:
            form = SubmissionForm() 
@@ -159,10 +166,9 @@ def EvaluateAssignment(request, pk1, pk2):
         form_instance = SubmittedAssignment.objects.get(pk=pk2)
         if request.method == 'POST':
             form = EvaluationForm(request.POST, request.FILES, instance=form_instance)
-            print(form)
             if form.is_valid():
                 submission_obj = form.save(commit=False)
-                submission_obj.student = SiteUser.objects.get(pk=pk2)
+                submission_obj.student = SubmittedAssignment.objects.get(pk=pk2).student
                 submission_obj.is_graded = True
                 submission_obj.save()
                 return redirect('coursemanager:home')

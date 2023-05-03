@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    # 'microsoft_auth',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -71,14 +71,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # 'microsoft_auth.context_processors.microsoft',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'submission_portal.wsgi.application'
-
+# WSGI_APPLICATION = 'submission_portal.wsgi.application'
+ASGI_APPLICATION = 'submission_portal.asgi.application'
 # LOGIN_REDIRECT_URL = '/'
 
 # Database
@@ -91,17 +90,19 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
+
 AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
-    # 'microsoft_auth.backends.MicrosoftAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend' # if you also want to use Django's authentication
 ]
-
-# MICROSOFT_AUTH_CLIENT_ID = '5e926049-4ba0-4037-a194-d5cd2756c5fd'
-# MICROSOFT_AUTH_CLIENT_SECRET = 'LVC8Q~mzYPX4jLXa8lwiW69S99Ymu.ZCeVcGfb8C'
-# # Tenant ID is also needed for single tenant applications
-# MICROSOFT_AUTH_TENANT_ID = '850aa78d-94e1-4bc6-9cf3-8c11b530701c'
-# MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

@@ -4,6 +4,12 @@ from django.core.exceptions import ValidationError
 import datetime
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+import channels.layers
+from django.dispatch import receiver
+from asgiref.sync import async_to_sync
+import json
+from channels.layers import get_channel_layer
 
 
 def assignment_upload_file_name(instance, filename):
@@ -42,3 +48,46 @@ class SubmittedAssignment(models.Model):
     marks = models.IntegerField('Marks Obtained', null=True, blank=True)
     feedback = models.CharField('Feedback', max_length=1024, null=True, blank=True)
     submission_time = models.DateTimeField('Submission Time', default=datetime.datetime.now, null=True, blank=True)
+
+
+@receiver(post_save, sender=Assignment)
+def assign_created_handler(sender, instance,created , **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        data  = {'message': 'New Assignment Uploaded!! - ' + instance.assignment_name}
+        async_to_sync(channel_layer.group_send)(
+            'channel_group',{
+                'type': 'notif_send',
+                'value': json.dumps(data)
+            }
+        )
+    if not created:
+        channel_layer = get_channel_layer()
+        data  = {'message': instance.assignment_name + ' has been updated'}
+        async_to_sync(channel_layer.group_send)(
+            'channel_group',{
+                'type': 'notif_send',
+                'value': json.dumps(data)
+            }
+        )
+
+@receiver(post_save, sender=SubmittedAssignment)
+def assign_created_handler(sender, instance,created , **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        data  = {'message': instance.student_name + " has submitted " + instance.submitted_assignment_name}
+        async_to_sync(channel_layer.group_send)(
+            'channel_group_instructor',{
+                'type': 'notif_send',
+                'value': json.dumps(data)
+            }
+        )
+    if not created:
+        channel_layer = get_channel_layer()
+        data  = {'message': 'Your submission for ' + instance.submitted_assignment_name + ' has been graded'}
+        async_to_sync(channel_layer.group_send)(
+            'channel_group',{
+                'type': 'notif_send',
+                'value': json.dumps(data)
+            }
+        )

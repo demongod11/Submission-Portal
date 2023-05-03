@@ -1,5 +1,4 @@
 {% load static %}
-{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
     {% load socialaccount %}
@@ -13,7 +12,7 @@
         <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <div class="flex">
-                    <a class="text-lg font-bold text-gray-800" href="#">Assignment Manager</a>
+                    <a class="text-lg font-bold text-gray-800" id="notif" href="#">Assignment Manager</a>
                 </div>
                 <div class="flex">
                     <span class="text-gray-600 mr-4">{{ user.email }}</span>
@@ -69,4 +68,28 @@
             
 </table>
 </body>
+<script>
+    let socket = new WebSocket('ws://localhost:8000/ws/notify');
+
+    socket.onopen = function (e) {
+      console.log('Connection established - Socket');
+    };
+  
+    socket.onmessage = function (e) {
+      var data = JSON.parse(e.data)
+      var value = data.payload.message
+      console.log(data)
+      showNotif(value)
+    };
+    socket.onclose = function (e) {
+      console.log('Connection closed - Socket');
+    };
+  
+    function showNotif(value){
+        var notif_html = document.querySelector('#notif')
+        notif_html.innerHTML += `<br><span style="color:red">`+ value + `</span>`
+        console.log(notif_html)  
+    }
+  </script>
+  
 </html>
