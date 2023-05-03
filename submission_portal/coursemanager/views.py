@@ -60,16 +60,10 @@ def index(request):
 
 
 @login_required(login_url='/accounts/login/') 
-def dummy(request, pk):
-    return render(request, 'dummy.html')
-
-
-@login_required(login_url='/accounts/login/') 
 def AddAssignment(request):
     if request.user.is_staff:
         if request.method == 'POST':
             form = AssignmentForm(request.POST, request.FILES)
-            print(form)
             if form.is_valid():
                 assignment = form.save(commit=False)
                 if request.FILES.get('assignment_file', None):

@@ -5,22 +5,26 @@
     {% load socialaccount %}
 <head>
     <meta charset="UTF-8">
-    <title>View Submissions</title>
-    <script src="{% static 'jquery-3.4.1.min.js' %}"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+    <title>View Assignments</title>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div>Logged in as {{ user.email }} with Roll number as {{ user.last_name }}</div>
-    <a href="accounts/logout">Log Out</a>
-    <div>List of all Submissions for {{ assignment_object.assignment_name }}:</div>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex">
+                    <a class="text-lg font-bold text-gray-800" href="#">Assignment Manager</a>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-600 mr-4">{{ user.email }}</span>
+                    <span class="text-gray-600">{{ user.last_name }}</span>
+                    <a class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 ml-4 rounded" href="accounts/logout">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto my-8">
+        <div class="text-2xl font-bold mb-4">List of all Submissions for {{ assignment_object.assignment_name }}:</div>
     <table class="table-auto w-full text-left whitespace-no-wrap">
         <tbody>
             <tr>
@@ -38,17 +42,17 @@
     <table>
         <tr>
             <td width="15%" class="px-4 py-3">{{ item.student_name }}</td>
-            <td width="15%" class="px-4 py-3"><a href="{% url 'coursemanager:media' file=item.submission_file %}"target="_blank">View Submission</a></td>
+            <td width="15%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700"  href="{% url 'coursemanager:media' file=item.submission_file %}"target="_blank">View Submission</a></td>
             <td width="10%" class="px-4 py-3 ">{{ item.submission_time }}</td>
             <td width="20%" class="px-4 py-3 ">{{ assignment_object.deadline }}</td>
             {% if item.is_graded %}
                 <td width="15%" class="px-4 py-3 ">{{ item.marks }}/{{ assignment_object.max_marks }} </td>
                 <td width="10%" class="px-4 py-3 ">{{ item.feedback }} </td>
-                <td width="15%" class="px-4 py-3 "><a href="{% url 'coursemanager:evaluate-assignment' pk1=assignment_object.pk pk2=item.pk %}">Edit Grade</a></td>
+                <td width="15%" class="px-4 py-3 "><a class="text-blue-500 hover:text-blue-700"  href="{% url 'coursemanager:evaluate-assignment' pk1=assignment_object.pk pk2=item.pk %}">Edit Grade</a></td>
             {% else %}
                 <td width="15%" class="px-4 py-3 ">Not Graded</td>
                 <td width="10%" class="px-4 py-3 ">Not Given</td>
-                <td width="15%" class="px-4 py-3 "><a href="{% url 'coursemanager:evaluate-assignment' pk1=assignment_object.pk pk2=item.pk %}">Evaluate</a></td>
+                <td width="15%" class="px-4 py-3 "><a class="text-blue-500 hover:text-blue-700"  href="{% url 'coursemanager:evaluate-assignment' pk1=assignment_object.pk pk2=item.pk %}">Evaluate</a></td>
             {% endif %}
         </tr>
     </table>
