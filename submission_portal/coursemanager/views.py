@@ -17,7 +17,7 @@ def index(request):
         context = {"assignments": assignments}
         return render(request, 'instructor_index.html', context)
     else:
-        assignments = Assignment.objects.all()
+        assignments_all = Assignment.objects.all()
         submissions = SubmittedAssignment.objects.filter(Q(student_name = user.user.first_name))
         submitted_array = []
         graded_array = []
@@ -27,7 +27,7 @@ def index(request):
         deadlines_array = []
         submitted_assign_array= []
 
-        for assignment in assignments:
+        for assignment in assignments_all:
             flag = False
             flag_graded = False
             marks = 0
@@ -53,7 +53,7 @@ def index(request):
             total_marks_array.append(assignment.max_marks)
             feedbacks_array.append(feedback)
 
-        my_list = zip(assignments, submitted_array, graded_array, marks_array, total_marks_array, feedbacks_array, deadlines_array, submitted_assign_array)
+        my_list = zip(assignments_all, submitted_array, graded_array, marks_array, total_marks_array, feedbacks_array, deadlines_array, submitted_assign_array)
 
         context = { "my_list": my_list }
         return render(request, 'student_index.html', context)

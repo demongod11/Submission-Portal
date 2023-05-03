@@ -10,6 +10,8 @@ from django.dispatch import receiver
 from asgiref.sync import async_to_sync
 import json
 from channels.layers import get_channel_layer
+from django.utils import timezone
+
 
 
 def assignment_upload_file_name(instance, filename):
@@ -52,6 +54,17 @@ class SubmittedAssignment(models.Model):
 
 @receiver(post_save, sender=Assignment)
 def assign_created_handler(sender, instance,created , **kwargs):
+    print(instance.deadline)
+    print(timezone.now())
+    if instance.deadline < timezone.now():
+        channel_layer = get_channel_layer()
+        data  = {'message': 'Deadline for ' + instance.assignment_name + ' has passed'}
+        async_to_sync(channel_layer.group_send)(
+            'channel_group',{
+                'type': 'notif_send',
+                'value': json.dumps(data)
+            }
+        )        
     if created:
         channel_layer = get_channel_layer()
         data  = {'message': 'New Assignment Uploaded!! - ' + instance.assignment_name}
