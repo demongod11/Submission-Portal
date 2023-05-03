@@ -10,5 +10,6 @@ urlpatterns = [
     path('assignment/<int:pk>/', views.EditAssignment, name = 'edit-assignment'),
     path('media/<path:file>', views.MediaView, name='media'),
     path('submit/<int:pk>/', views.SubmitAssignment, name = 'submit-assignment'),
+    path('edit-submitted/<int:pk1>/<int:pk2>', views.EditSubmittedAssignment, name = 'edit-submitted-assignment'),
     path('evaluate/<int:pk1>/<int:pk2>', views.EvaluateAssignment, name = 'evaluate-assignment'),
 ]   

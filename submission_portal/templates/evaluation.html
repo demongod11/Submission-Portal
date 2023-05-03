@@ -46,7 +46,7 @@
 
          {% csrf_token %}
             <div class="relative mb-4 form-group">
-                <label for="Marks" class="leading-7 required-field text-Black-600">Marks (Out of {{ assignment_obj.max_marks }})</label><br>
+                <label for="Marks" class="leading-7 required-field text-Black-600" >Marks (Out of {{ assignment_obj.max_marks }})</label><br>
                 {{ form.marks }}
             </div>
 
@@ -68,9 +68,31 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script scr="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
-{% comment %} <script>
-    $('#mks').val(21);
-    $('#fb').val("pls");
-</script>  {% endcomment %}
+<script>
+    // Get the marks input and max marks from the DOM
+    const marksInput = document.getElementById('id_marks');
+    const maxMarks = {{ assignment_obj.max_marks }};
+    console.log(marksInput.value)
+    console.log(marksInput)
+    console.log(maxMarks)
+    // Add event listener on form submission
+    document.querySelector('form').addEventListener('submit', (event) => {
+      // Prevent form submission by default
+      event.preventDefault();
+      
+      // Check if the entered marks are greater than the max marks
+      if (parseInt(marksInput.value) > maxMarks) {
+        // Display an alert message
+        alert('Allotted marks are exceeding total marks.');
+        
+        // Reload the page
+        location.reload();
+      } else {
+        // Submit the form if marks are within the limit
+        event.target.submit();
+      }
+    });
+  </script>
+  
 </body>
 </html>

@@ -31,13 +31,13 @@
                     <th width="15%" class="px-4 py-3 font-medium text-gray-900">Description</th>
                     <th width="15%" class="px-4 py-3 font-medium text-gray-900">Assignment File</th>
                     <th width="15%" class="px-4 py-3 font-medium text-gray-900">Deadline</th>
-                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Submission Status</th>
+                    <th width="15%" class="px-4 py-3 font-medium text-gray-900">Submission Status</th>
                     <th width="10%" class="px-4 py-3 font-medium text-gray-900">Grade Awarded</th>
-                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Feedback</th>
+                    <th width="15%" class="px-4 py-3 font-medium text-gray-900">Feedback</th>
                 </tr>
             </thead>
             <tbody>
-                {% for assignment, submit_array, grade_array, mark_array, total_mark_array, feedback, deadline_array in my_list %}
+                {% for assignment, submit_array, grade_array, mark_array, total_mark_array, feedback, deadline_array, sub_pk in my_list %}
                 <table>
                     <tr>
                         <td width="15%" class="px-4 py-3">{{ assignment.assignment_name }}</td>
@@ -45,7 +45,11 @@
                         <td width="10%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:media' file=assignment.assignment_file %}" target="_blank">View Assignment</a></td>
                         <td width="20%" class="px-4 py-3 {% if deadline_array %}{% if deadline_array < timezone.now %}text-red-500{% endif %}{% endif %}">{{ assignment.deadline }}</td>
                         {% if submit_array %}
-                            <td width="10%" class="px-4 py-3 {% if grade_array %}text-green-500{% endif %}">Submitted</td>
+                            {% if deadline_array %}
+                                <td width="15%" class="px-4 py-3 "><a href="{% url 'coursemanager:submit-assignment' pk=sub_pk %}" class="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit Submission</a></td>
+                            {% else %}   
+                                <td width="15%" class="px-4 py-3 text-green-500"> Submitted </td> 
+                            {% endif %}    
                             {% if grade_array %}
                                 <td width="10%" class="px-4 py-3 ">{{ mark_array }}/{{ total_mark_array }}</td>
                                 <td width="20%" class="px-4 py-3 ">{{ feedback }}</td>
@@ -55,12 +59,12 @@
                             {% endif %}
                         {% else %}
                             {% if deadline_array %}
-                                <td width="10%" class="px-4 py-3"><a href="{% url 'coursemanager:submit-assignment' pk=assignment.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</a></td>
+                                <td width="15   %" class="px-4 py-3"><a href="{% url 'coursemanager:submit-assignment' pk=assignment.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</a></td>
                             {% else %}
-                                <td width="10%" class="px-4 py-3 text-red-500">Deadline Passed</td>
+                                <td width="15%" class="px-4 py-3 text-red-500">Deadline Passed</td>
                             {% endif %}
                             <td width="10%" class="px-4 py-3 ">Not Graded</td>
-                            <td width="20%" class="px-4 py-3 ">Not Given</td>
+                            <td width="15%" class="px-4 py-3 ">Not Given</td>
                         {% endif %}
                     </tr>
                 </table>

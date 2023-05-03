@@ -25,6 +25,7 @@ def index(request):
         total_marks_array = []
         feedbacks_array = []
         deadlines_array = []
+        submitted_assign_array= []
 
         for assignment in assignments:
             flag = False
@@ -37,23 +38,22 @@ def index(request):
                     flag_graded = submission.is_graded
                     marks = submission.marks
                     feedback = submission.feedback
+                    submitted_assign_array.append(submission.pk)
                     break
-            
-            if flag == False:
-                if assignment.deadline < timezone.now():
-                    deadlines_array.append(False)
-                else:
-                    deadlines_array.append(True)
+
+
+            if assignment.deadline < timezone.now():
+                deadlines_array.append(False)
             else:
                 deadlines_array.append(True)
-
+                
             submitted_array.append(flag)
             graded_array.append(flag_graded)
             marks_array.append(marks)
             total_marks_array.append(assignment.max_marks)
             feedbacks_array.append(feedback)
 
-        my_list = zip(assignments, submitted_array, graded_array, marks_array, total_marks_array, feedbacks_array, deadlines_array)
+        my_list = zip(assignments, submitted_array, graded_array, marks_array, total_marks_array, feedbacks_array, deadlines_array, submitted_assign_array)
 
         context = { "my_list": my_list }
         return render(request, 'student_index.html', context)
@@ -144,7 +144,41 @@ def SubmitAssignment(request,pk):
            form = SubmissionForm() 
 
         return render(request, 'submission.html', {'form': form, 'name_assignment': assignment.assignment_name, 'url': str(pk)})
-    
+
+
+@login_required(login_url='/accounts/login/')
+def EditSubmittedAssignment(request,pk1,pk2):
+    user, created = SiteUser.objects.get_or_create(user_id=request.user.id)
+    if request.user.is_staff:
+        return HttpResponseForbidden()
+    else:
+        assignment = Assignment.objects.get(pk=pk1)
+        form_instance = SubmittedAssignment.objects.get(pk=pk2)
+        if request.method == 'POST':
+            form = SubmissionForm(request.POST, request.FILES, form_instance)
+
+            if form.is_valid():
+                submission = form.save(commit=False)
+                submission.student = SiteUser.objects.get(user_id=request.user.id)
+                submission.student_name = user.user.first_name
+                submission.roll_number = user.user.last_name
+                submission.submitted_assignment_name = assignment.assignment_name
+
+                if request.FILES.get('submission_file', None):
+                    submission.submission_file = request.FILES.get(
+                        'submission_file', None)
+
+                submission.save()
+
+                return redirect('coursemanager:home')
+            
+            else:
+                print(form.errors)
+
+        else:
+           form = SubmissionForm(form_instance) 
+
+        return render(request, 'submission.html', {'form': form, 'name_assignment': assignment.assignment_name, 'url': str(pk1)+"/"+str(pk2)+"/"}) 
 
 
 @login_required(login_url='/accounts/login/') 
