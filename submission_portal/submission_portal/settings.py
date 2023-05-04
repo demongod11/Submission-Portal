@@ -159,8 +159,8 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# Application (client) ID: 5e926049-4ba0-4037-a194-d5cd2756c5fd
-# Object ID: dae96c86-0804-4d05-b155-e4284ce0f532
+# Application (client) ID: ef22bb8f-7480-422f-8a6b-391bd37a7328
+# Object ID: aa1cbd97-7aa3-4430-9af6-7220e019b1a4
 # Directory (tenant) ID: 850aa78d-94e1-4bc6-9cf3-8c11b530701c
-# Secret Value: LVC8Q~mzYPX4jLXa8lwiW69S99Ymu.ZCeVcGfb8C
-# Secret ID: 8a2e9019-cb9f-4326-b1ff-a5caeea5f860
+# Secret Value: kvt8Q~ty0MCEmkjBInGwDyufkPNy7jWCxS5r2c_.
+# Secret ID: d540ba00-8dda-4be2-8ca7-005896941aef

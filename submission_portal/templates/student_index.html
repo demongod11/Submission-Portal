@@ -1,4 +1,4 @@
-{% load static %}
+{% comment %} {% load static %}
 <!DOCTYPE html>
 <html lang="en">
     {% load socialaccount %}
@@ -36,9 +36,8 @@
                     <th width="15%" class="px-4 py-3 font-medium text-gray-900">Feedback</th>
                 </tr>
             </thead>
-            <tbody>
+                {{ my_list }}
                 {% for assignment, submit_array, grade_array, mark_array, total_mark_array, feedback, deadline_array, sub_pk in my_list %}
-                <table>
                     <tr>
                         <td width="15%" class="px-4 py-3">{{ assignment.assignment_name }}</td>
                         <td width="15%" class="px-4 py-3">{{ assignment.description }}</td>
@@ -67,10 +66,8 @@
                             <td width="15%" class="px-4 py-3 ">Not Given</td>
                         {% endif %}
                     </tr>
-                </table>
-            {% endfor %}
+                {% endfor %}    
             
-</table>
 </body>
 <script>
     let socket = new WebSocket('ws://localhost:8000/ws/notify');
@@ -96,4 +93,101 @@
     }
   </script>
   
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+    {% load socialaccount %}
+<head>
+    <meta charset="UTF-8">
+    <title>View Assignments</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex">
+                    <a class="text-lg font-bold text-gray-800" href="#" id="notif">Assignment Manager</a>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-600 mr-4">{{ user.email }}</span>
+                    <span class="text-gray-600">{{ user.last_name }}</span>
+                    <a class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 ml-4 rounded" href="accounts/logout">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto my-8">
+        <div class="text-2xl font-bold mb-4">List of all assignments:</div>
+        <table class="table-auto w-full text-left">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Assignment Name</th>
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Description</th>
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Assignment File</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Deadline</th>
+                    <th width="15%" class="px-4 py-3 font-medium text-gray-900">Submission Status</th>
+                    <th width="10%" class="px-4 py-3 font-medium text-gray-900">Grade Awarded</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment, submit_array, grade_array, mark_array, total_mark_array, feedback, deadline_array in my_list %}
+                <table>
+                    <tr>
+                        <td width="10%" class="px-4 py-3">{{ assignment.assignment_name }}</td>
+                        <td width="10%" class="px-4 py-3">{{ assignment.description }}</td>
+                        <td width="10%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:media' file=assignment.assignment_file %}" target="_blank">View Assignment</a></td>
+                        <td width="20%" class="px-4 py-3 {% if deadline_array %}{% if deadline_array < timezone.now %}text-red-500{% endif %}{% endif %}">{{ assignment.deadline }}</td>
+                        {% if submit_array %}
+                            {% if deadline_array %}
+                                <td width="15%" class="px-4 py-3"><a href="{% url 'coursemanager:submit-assignment' pk=assignment.pk %}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit Submission</a></td>
+                            {% else %}     
+                                <td width="15%" class="px-4 py-3 {% if grade_array %}text-green-500{% endif %}">Submitted</td>
+                            {% endif %}
+                            {% if grade_array %}
+                                <td width="10%" class="px-4 py-3 ">{{ mark_array }}/{{ total_mark_array }}</td>
+                                <td width="20%" class="px-4 py-3 ">{{ feedback }}</td>
+                            {% else %}
+                                <td width="10%" class="px-4 py-3 ">Not Graded</td>
+                                <td width="20%" class="px-4 py-3 ">Not Given</td>
+                            {% endif %}
+                        {% else %}
+                            {% if deadline_array %}
+                                <td width="15%" class="px-4 py-3"><a href="{% url 'coursemanager:submit-assignment' pk=assignment.pk %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit</a></td>
+                            {% else %}
+                                <td width="15%" class="px-4 py-3 text-red-500">Deadline Passed</td>
+                            {% endif %}
+                            <td width="10%" class="px-4 py-3 ">Not Graded</td>
+                            <td width="20%" class="px-4 py-3 ">Not Given</td>
+                        {% endif %}
+                    </tr>
+                </table>
+            {% endfor %}
+
+</table>
+</body>
+<script>
+    let socket = new WebSocket('ws://localhost:8000/ws/notify');
+
+    socket.onopen = function (e) {
+      console.log('Connection established - Socket');
+    };
+  
+    socket.onmessage = function (e) {
+      var data = JSON.parse(e.data)
+      var value = data.payload.message
+      console.log(data)
+      showNotif(value)
+    };
+    socket.onclose = function (e) {
+      console.log('Connection closed - Socket');
+    };
+  
+    function showNotif(value){
+        var notif_html = document.querySelector('#notif')
+        notif_html.innerHTML += `<br><span style="color:red">`+ value + `</span>`
+        console.log(notif_html)  
+    }
+  </script>
 </html>

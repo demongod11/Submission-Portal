@@ -17,7 +17,7 @@
                 <div class="flex">
                     <span class="text-gray-600 mr-4">{{ user.email }}</span>
                     <span class="text-gray-600">{{ user.last_name }}</span>
-                    <a class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 ml-4 rounded" href="accounts/logout">Log Out</a>
+                    <a class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 ml-4 rounded" href="accounts/logout">Log Out</a>
                 </div>
             </div>
         </div>
@@ -27,7 +27,8 @@
         <table class="table-auto w-full text-left">
             <thead class="bg-gray-200">
                 <tr>
-                    <th width="40%" class="px-4 py-3 font-medium text-gray-900">Assignment Name</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Assignment Name</th>
+                    <th width="20%" class="px-4 py-3 font-medium text-gray-900">Creation Time</th>
                     <th width="20%" class="px-4 py-3 font-medium text-gray-900">Deadline</th>
                     <th width="20%" class="px-4 py-3 font-medium text-gray-900">Assignments</th>
                     <th width="20%" class="px-4 py-3 font-medium text-gray-900">Submissions</th>
@@ -36,16 +37,17 @@
             <tbody>
             {% for item in assignments %}
                 <tr>
-                    <td width="40%" class="px-4 py-3">{{ item.assignment_name }}</td>
+                    <td width="20%" class="px-4 py-3">{{ item.assignment_name }}</td>
+                    <td width="20%" class="px-4 py-3">{{ item.created_time }}</td>
                     <td width="20%" class="px-4 py-3">{{ item.deadline }}</td>
-                    <td width="20%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:edit-assignment' pk=item.pk %}" target="_blank">View/Edit Assignment</a></td>
-                    <td width="20%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:submissions-view' pk=item.pk %}">View Submissions</a></td>
+                    <td width="20%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:edit-assignment' pk=item.pk %}" >View/Edit Assignment</a></td>
+                    <td width="20%" class="px-4 py-3"><a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:submissions-view' pk=item.pk %}" target="_blank">View Submissions</a></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
-    <a class="text-blue-500 hover:text-blue-700" href="{% url 'coursemanager:add-assignment' %}">Add Assignment</a>
+    <a class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"href="{% url 'coursemanager:add-assignment' %}">Add Assignment</a>
 </body>
 
 <script>
